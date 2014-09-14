@@ -1,0 +1,7 @@
+name: clive
+version: 0.0.1
+author: Anders Holmberg
+description: A Dart game engine for those ZX Spectrum inspired retro games.
+homepage: https://github.com/endian-labs/clive
+dependencies:
+  browser: any
