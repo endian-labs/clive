@@ -11,16 +11,25 @@
 part of clive;
 
 class Engine {
-  
+
   Canvas canvas;
-  
-  Engine(canvas_id) {    
+  var gameCallback;
+
+  Engine(canvas_id) {
     canvas = new Canvas(canvas_id);
   }
-  
+
+  void runGame(initCallback, gameCallback) {
+    initCallback(canvas);
+    canvas.snapshot();
+    this.gameCallback = gameCallback;
+    runLoop(0);
+  }
+
   void runLoop(num time) {
-    canvas.preUpdate();    
+    canvas.preUpdate();
+    gameCallback(canvas);
     canvas.update();
-    window.requestAnimationFrame(runLoop);
+    //window.requestAnimationFrame(runLoop);
   }
 }
