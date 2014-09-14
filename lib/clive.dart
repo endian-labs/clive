@@ -11,6 +11,7 @@
 library clive;
 
 import 'dart:html';
+import 'dart:math';
 import 'dart:typed_data';
 
 part 'src/engine.dart';

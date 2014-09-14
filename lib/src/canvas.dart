@@ -67,11 +67,15 @@ class Canvas {
   CanvasRenderingContext2D _context;
   ImageData _imageData;
 
+  int _mult = 1;
+
   Canvas(canvas_id) {
 
     _canvas    = document.querySelector(canvas_id);
     _context   = _canvas.getContext('2d');
     _imageData = _context.createImageData(_canvas.width, _canvas.height);
+
+    _mult = min(_canvas.width~/PIXEL_WIDTH, _canvas.height~/PIXEL_HEIGHT);
 
     _pixelBufferCopy.setAll(0, _pixelBuffer);
     _attributeBufferCopy.setAll(0, _attributeBuffer);
@@ -134,22 +138,31 @@ class Canvas {
       _dirty = false;
     }
 
-    for (var idx=0; idx<(PIXEL_WIDTH * PIXEL_HEIGHT); idx++) {
+    for (var idx=0; idx<(PIXEL_WIDTH*PIXEL_HEIGHT); idx++) {
 
-      var attributeIndex = ((idx >> 3) & 0x1f) +( (idx >> 6) & 0x3e0);
+      var attributeIndex = ((idx >> 3) & 0x1f) +((idx >> 6) & 0x3e0);
       var attributeByte  = _attributeBuffer[attributeIndex];
       var color;
-
       if (_pixelBuffer[idx] == 1) {
         color = _colorMap[attributeByte & 0x07];
       } else {
         color = _colorMap[(attributeByte >> 3) & 0x07];
       }
 
-      _imageData.data[idx*4 + 0] = color['r'];
-      _imageData.data[idx*4 + 1] = color['g'];
-      _imageData.data[idx*4 + 2] = color['b'];
-      _imageData.data[idx*4 + 3] = 0xff;
+      var x1 = idx % 256;
+      var y1 = idx ~/ 256;
+
+      for (var y2=0; y2<_mult; y2++) {
+        for (var x2=0; x2<_mult; x2++) {
+
+          var idx2 = (x1*_mult + y1*512*_mult + x2*512 + y2) * 4;
+
+          _imageData.data[idx2 + 0] = color['r'];
+          _imageData.data[idx2 + 1] = color['g'];
+          _imageData.data[idx2 + 2] = color['b'];
+          _imageData.data[idx2 + 3] = 0xff;
+        }
+      }
     }
 
     _context.putImageData(_imageData, 0, 0);
