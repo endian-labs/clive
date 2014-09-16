@@ -17,3 +17,5 @@ import 'dart:typed_data';
 part 'src/engine.dart';
 part 'src/canvas.dart';
 part 'src/tile.dart';
+part 'src/sprite.dart';
+part 'src/utility.dart';

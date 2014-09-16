@@ -50,6 +50,11 @@ class Canvas {
     COLOR_TRANSPARENT   : { 'r':0xff, 'g':0xff, 'b':0xff }
   };
 
+  static const int BLIT_MODE_IGNORE_ATTRIBUTE = 1;
+  static const int BLIT_MODE_GREEDY = 2;
+  static const int BLIT_MODE_GENEROUS = 3;
+  static const int BLIT_MODE_50_50 = 4;
+
   static const int PIXEL_WIDTH = 256;
   static const int PIXEL_HEIGHT = 192;
   static const int COLUMNS = 32;
@@ -93,35 +98,64 @@ class Canvas {
     }
   }
 
-  int getAttributeByte({int ink, int paper, bool bright}) {
-    var attributeByte = 0;
-
-    attributeByte |= ink != null ? (ink & 0x07) : 0;
-    attributeByte |= paper != null ? ((paper & 0x07) << 3) : 0;
-    attributeByte |= bright == null || !bright ? 0 : 0x40;
-
-    return attributeByte;
-  }
-
-  void setAttribute(int column, int row, {int byte, int ink, int paper, bool bright}) {
+  void setAttribute(int column, int row, {int byte, int ink, int paper, int bright}) {
     if (column <= 31 && row <= 23) {
       var attributeByte = 0;
 
       if (byte != null) {
         attributeByte = byte;
       } else {
-
-        attributeByte = getAttributeByte(ink:ink, paper:paper, bright:bright);
+        attributeByte = createAttribute(ink:ink, paper:paper, bright:bright);
       }
 
       _attributeBuffer[column + row * COLUMNS] = attributeByte;
     }
   }
 
-  void fillAttribute(int col1, int row1, int col2, int row2, {int byte, int ink, int paper, bool bright}) {
+  void fillAttribute(int col1, int row1, int col2, int row2, {int byte, int ink, int paper, int bright}) {
     for (var row=row1; row<=row2; row++) {
       for (var col=col1; col<=col2; col++) {
         setAttribute(col, row, byte:byte, ink:ink, paper:paper, bright:bright);
+      }
+    }
+  }
+
+  void blitTile(Tile tile, int x, int y) {
+
+    var idx = 0;
+    var count = 1;
+    var value = 0;
+
+    for (var y1=0; y1<30; y1++) {
+      for (var x1=0; x1<tile.width; x1++) {
+
+        if (--count == 0) {
+          value = tile.pixel[idx++];
+
+          if (value < 3) {
+            count = 1;
+
+          } else {
+            count = value;
+            value = tile.pixel[idx++];
+          }
+        }
+
+        plotPixel(x1+x, y1+y, value);
+      }
+    }
+  }
+
+  void _plotPixel(int x, int y, Map color) {
+    for (var y1=0; y1<_mult; y1++) {
+      for (var x1=0; x1<_mult; x1++) {
+
+        var idx = (x*_mult + y*_canvas.width*_mult + x1*_canvas.width + y1) * 4;
+
+        _imageData.data[idx + 0] = color['r'];
+        _imageData.data[idx + 1] = color['g'];
+        _imageData.data[idx + 2] = color['b'];
+        _imageData.data[idx + 3] = 0xff;
       }
     }
   }
@@ -131,12 +165,17 @@ class Canvas {
     _attributeBuffer.setAll(0, _attributeBufferCopy);
   }
 
-  void update() {
+  void update(List<Sprite> sprites) {
     if (_dirty) {
       _pixelBufferCopy.setAll(0, _pixelBuffer);
       _attributeBufferCopy.setAll(0, _attributeBuffer);
       _dirty = false;
     }
+
+    sprites.forEach((sprite) {
+      blitTile(sprite, sprite.x, sprite.y);
+    });
+
 
     for (var idx=0; idx<(PIXEL_WIDTH*PIXEL_HEIGHT); idx++) {
 
@@ -149,20 +188,10 @@ class Canvas {
         color = _colorMap[(attributeByte >> 3) & 0x07];
       }
 
-      var x1 = idx % 256;
-      var y1 = idx ~/ 256;
+      var x = idx % 256;
+      var y = idx ~/ 256;
 
-      for (var y2=0; y2<_mult; y2++) {
-        for (var x2=0; x2<_mult; x2++) {
-
-          var idx2 = (x1*_mult + y1*512*_mult + x2*512 + y2) * 4;
-
-          _imageData.data[idx2 + 0] = color['r'];
-          _imageData.data[idx2 + 1] = color['g'];
-          _imageData.data[idx2 + 2] = color['b'];
-          _imageData.data[idx2 + 3] = 0xff;
-        }
-      }
+      _plotPixel(x, y, color);
     }
 
     _context.putImageData(_imageData, 0, 0);
