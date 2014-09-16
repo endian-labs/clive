@@ -5,3 +5,4 @@ description: A Dart game engine for those ZX Spectrum inspired retro games.
 homepage: https://github.com/endian-labs/clive
 dependencies:
   browser: any
+  image: any
