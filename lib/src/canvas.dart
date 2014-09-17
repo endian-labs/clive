@@ -94,7 +94,11 @@ class Canvas {
   void plotPixel(int x, int y, int pixel) {
     if (x < PIXEL_WIDTH && y < PIXEL_HEIGHT) {
       var idx = x + y * PIXEL_WIDTH;
-      _pixelBuffer[idx] = pixel;
+      try {
+        _pixelBuffer[idx] = pixel;
+      } on RangeError catch(e) {
+        // Intentionally left blank...
+      }
     }
   }
 
