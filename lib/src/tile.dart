@@ -8,6 +8,15 @@
 // (C) 2014 Anders Holmberg, See LICENSE.txt.
 //
 
+//
+// Tile format. No color; only INK/PAPER bool and simple compression.
+//
+// Value = 0  -> INK
+// Value = 1  -> PAPER
+// Value = 2  -> Transparent
+// Value >= 3 -> Repeat next value
+//
+
 part of clive;
 
 class Tile {
