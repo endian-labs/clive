@@ -186,7 +186,7 @@ class Canvas {
       var attributeIndex = ((idx >> 3) & 0x1f) +((idx >> 6) & 0x3e0);
       var attributeByte  = _attributeBuffer[attributeIndex];
       var color;
-      if (_pixelBuffer[idx] == 0) {
+      if (_pixelBuffer[idx] == 1) {
         color = _colorMap[attributeByte & 0x07];
       } else {
         color = _colorMap[(attributeByte >> 3) & 0x07];

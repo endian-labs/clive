@@ -64,9 +64,9 @@ void main(List<String> args) {
         var idx2 = x + y*tile['width'];
 
         if (color > 0x7fffff) {
-          pixel[idx2] = 1;
-        } else {
           pixel[idx2] = 0;
+        } else {
+          pixel[idx2] = 1;
         }
 
         if (transparent < 0x7f) {
