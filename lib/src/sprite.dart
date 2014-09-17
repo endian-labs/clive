@@ -16,7 +16,10 @@ class Sprite extends Tile {
   bool visible = true;
 
   Sprite(int width, int height, Uint8List pixel, {int attribute, int ink, int paper, int bright}) :
-    super(width, height, pixel, attribute:attribute, ink:ink, paper:paper, bright:bright) {
+    super.fromPixel(width, height, pixel, attribute:attribute, ink:ink, paper:paper, bright:bright) {
+  }
+
+  Sprite.fromTile(Tile tile) : super.fromTile(tile) {
   }
 
   void setPosition(x, y) {
