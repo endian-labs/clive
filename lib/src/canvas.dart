@@ -126,7 +126,7 @@ class Canvas {
     var count = 1;
     var value = 0;
 
-    for (var y1=0; y1<30; y1++) {
+    for (var y1=0; y1<tile.height; y1++) {
       for (var x1=0; x1<tile.width; x1++) {
 
         if (--count == 0) {
