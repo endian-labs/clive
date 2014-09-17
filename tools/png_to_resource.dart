@@ -70,7 +70,7 @@ void main(List<String> args) {
         }
 
         if (transparent < 0x7f) {
-          // pixel[idx2] = 2;
+          pixel[idx2] = 2;
         }
       }
     }
@@ -102,8 +102,18 @@ void main(List<String> args) {
       }
     }
 
+    if (count > 2) {
+       pixelC.add(count);
+       pixelC.add(lastByte);
+     } else {
+       pixelC.add(lastByte);
+       if (count == 2) {
+         pixelC.add(lastByte);
+       }
+     }
+
     out += 'var ${name}Pixel = new Uint8List.fromList(${pixelC});\n';
-    out += 'var ${name}Sprite = new Clive.Sprite(${tile['width']}, ${tile['height']}';
+    out += 'var ${name}Tile = new Clive.Tile.fromPixel(${tile['width']}, ${tile['height']}';
     out += ', ${name}Pixel);\n\n';
   });
 
