@@ -55,6 +55,10 @@ class Canvas {
   static const int BLIT_MODE_GENEROUS = 3;
   static const int BLIT_MODE_50_50 = 4;
 
+  static const int INK = 0;
+  static const int PAPER = 1;
+  static const int TRANSPARENT = 2;
+
   static const int PIXEL_WIDTH = 256;
   static const int PIXEL_HEIGHT = 192;
   static const int COLUMNS = 32;
@@ -145,7 +149,9 @@ class Canvas {
           }
         }
 
-        plotPixel(x1+x, y1+y, value);
+        if (value != TRANSPARENT) {
+          plotPixel(x1+x, y1+y, value);
+        }
       }
     }
   }
