@@ -183,7 +183,7 @@ class Canvas {
     }
 
     sprites.forEach((sprite) {
-      blitTile(sprite, sprite.x, sprite.y);
+      blitTile(sprite.tiles[sprite.activeTile], sprite.x, sprite.y);
     });
 
 
